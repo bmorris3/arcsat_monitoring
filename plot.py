@@ -10,8 +10,8 @@ dset = f['images']
 
 composite = np.sum(f['images'][:], axis=2)
 
-composite = composite.copy() - np.min(composite) + 1
+# composite = composite.copy() - np.min(composite) + 1
 
 # plt.hist(composite.ravel(), log=True)
-plt.imshow(np.log(composite), vmin=13, vmax=15)
+plt.imshow(np.log(composite), vmin=13, vmax=15, origin='lower')
 plt.show()
