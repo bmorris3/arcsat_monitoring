@@ -5,11 +5,10 @@ from glob import glob
 from astropy.io import fits
 
 
-f = h5py.File('archive.hdf5', 'a')
-# u = h5py.File('archive_u.hdf5', 'a')
-times = np.loadtxt('times.txt')
-altitude = np.loadtxt('altitude.txt')
-airmass = np.loadtxt('airmass.txt')
+f = h5py.File('archive_u.hdf5', 'a')
+times = np.loadtxt('times_u.txt')
+altitude = np.loadtxt('altitude_u.txt')
+airmass = np.loadtxt('airmass_u.txt')
 
 dset = f['images']
 # dset_u = u['images']
@@ -46,30 +45,21 @@ comp_flux5 = np.sum(comparison5, axis=(0, 1)) #- comparison5_bg
 # print(np.shape(target_bg))
 # plt.imshow(np.log(np.sum(comparison1_bg, axis=-1)))
 # plt.show()
-
+#
 # from astroplan import FixedTarget, Observer
 # from astropy.time import Time
 # apo = Observer.at_site("APO")
 # aa = apo.altaz(Time(times, format='jd'), FixedTarget.from_name('KIC9652680'))
 # airmass = aa.secz.value
 # altitude = aa.alt.rad
-# np.savetxt('airmass.txt', airmass)
-# np.savetxt('altitude.txt', altitude)
+# np.savetxt('airmass_u.txt', airmass)
+# np.savetxt('altitude_u.txt', altitude)
 
-#comparison = np.mean([comp_flux1, comp_flux2], axis=0)
-#comparison = comp_flux1 + comp_flux2# + comp_flux3
 
-# mask_outliers = np.logical_not(target_flux < 0.95*np.median(target_flux))
 mask_outliers = np.ones_like(target_flux).astype(bool)
 
-X = np.vstack([comp_flux1, comp_flux2, comp_flux3, comp_flux4, #comp_flux5,
+X = np.vstack([comp_flux1, comp_flux3, comp_flux5, #comp_flux2, #comp_flux3, #comp_flux4, #comp_flux5,
                1-airmass, altitude, background]).T
-
-# from sklearn import linear_model
-# # RANSAC better than Huber or Theil-Sen
-# regressor = linear_model.RANSACRegressor() #linear_model.RANSACRegressor() # linear_model.TheilSenRegressor()
-# regressor.fit(X, target_flux)
-# comparison = regressor.predict(X)
 
 c = np.linalg.lstsq(X[mask_outliers], target_flux[mask_outliers])[0]
 comparison = X @ c
@@ -91,6 +81,6 @@ ax[2].legend()
 # plt.plot(times, comp_flux1, '.')
 # plt.plot(times, comp_flux2, '.')
 
-np.savetxt('lc.txt', np.vstack([times, lc]).T)
+np.savetxt('lc_u.txt', np.vstack([times, lc]).T)
 
 plt.show()
